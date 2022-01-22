@@ -132,8 +132,8 @@ STATIC_URL = '/static/'
 django_heroku.settings(locals())
 
 CORS_ALLOWED_ORIGINS = [
-    "https://comet_chaser.heroku.com",
-    "http://localhost:3080",
+    "https://cometchaser.heroku.com",
+    "http://localhost:3000",
 ]
 
 CORS_ALLOW_METHODS = [

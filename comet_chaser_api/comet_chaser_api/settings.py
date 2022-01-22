@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'live',
     'test_bot',
     'database',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = 'comet_chaser_api.urls'
@@ -128,3 +130,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
 django_heroku.settings(locals())
+
+CORS_ALLOWED_ORIGINS = [
+    "https://comet_chaser.heroku.com",
+    "http://localhost:3080",
+]
+
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "POST",
+    "PUT",
+]

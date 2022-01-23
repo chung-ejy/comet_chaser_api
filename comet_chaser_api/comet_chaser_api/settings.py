@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = str(token)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -151,7 +151,8 @@ django_heroku.settings(locals())
 
 CORS_ALLOWED_ORIGINS = [
     "https://cometchaser.herokuapp.com",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "http://localhost:8000"
 ]
 
 CORS_ALLOW_METHODS = [

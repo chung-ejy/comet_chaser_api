@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'database',
     'corsheaders',
     'knox',
-    'users'
+    'users',
 ]
 
 REST_FRAMEWORK = {
@@ -151,8 +151,7 @@ django_heroku.settings(locals())
 
 CORS_ALLOWED_ORIGINS = [
     "https://cometchaser.herokuapp.com",
-    "http://localhost:3000",
-    "http://localhost:8000"
+    "http://localhost:3000"
 ]
 
 CORS_ALLOW_METHODS = [

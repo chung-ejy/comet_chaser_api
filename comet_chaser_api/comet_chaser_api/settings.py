@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'rest_framework',
     'backtest',
     'live',
@@ -95,12 +96,16 @@ WSGI_APPLICATION = 'comet_chaser_api.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR + '/db.sqlite3'),
-    }
+        'default': {
+            'ENGINE': 'djongo',
+            'NAME': 'comet_chaser',
+            'ENFORCE_SCHEMA': False,
+            'CLIENT': {
+                'host': f'mongodb+srv://chungejy:{mongo}@scene.zblsh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+                "tlsCAFile":ca
+            }  
+        }
 }
-
 
 
 

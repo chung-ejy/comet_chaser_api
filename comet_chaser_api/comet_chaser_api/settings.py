@@ -14,7 +14,11 @@ import os
 import django_heroku
 from dotenv import load_dotenv
 load_dotenv()
+import certifi
+ca = certifi.where()
+
 token = os.getenv("DJANGO")
+mongo = os.getenv("MONGO")
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -44,8 +48,15 @@ INSTALLED_APPS = [
     'live',
     'test_bot',
     'database',
-    'corsheaders'
+    'corsheaders',
+    'knox',
+    'users'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES':
+    ('knox.auth.TokenAuthentication',)
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -82,12 +93,19 @@ WSGI_APPLICATION = 'comet_chaser_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': str(BASE_DIR + '/db.sqlite3'),
-    }
+        'default': {
+            'ENGINE': 'djongo',
+            'NAME': 'comet',
+            'ENFORCE_SCHEMA': False,
+            'CLIENT': {
+                'host': f'mongodb+srv://chungejy:{mongo}@scene.zblsh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+                'tlsCAFile':ca
+            }  
+        }
 }
+
 
 
 # Password validation
@@ -132,8 +150,8 @@ STATIC_URL = '/static/'
 django_heroku.settings(locals())
 
 CORS_ALLOWED_ORIGINS = [
-    "https://cometchaser.herokuapp.com/"
-    "http://localhost:3000",
+    "https://cometchaser.herokuapp.com",
+    "http://localhost:3000"
 ]
 
 CORS_ALLOW_METHODS = [

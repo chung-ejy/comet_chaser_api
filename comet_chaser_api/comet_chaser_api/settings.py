@@ -95,16 +95,12 @@ WSGI_APPLICATION = 'comet_chaser_api.wsgi.application'
 
 
 DATABASES = {
-        'default': {
-            'ENGINE': 'djongo',
-            'NAME': 'cometchaser',
-            'ENFORCE_SCHEMA': False,
-            'CLIENT': {
-                'host': f'mongodb+srv://chungejy:{mongo}@scene.zblsh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-                'tlsCAFile':ca
-            }  
-        }
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': str(BASE_DIR + '/db.sqlite3'),
+    }
 }
+
 
 
 

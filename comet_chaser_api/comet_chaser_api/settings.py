@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'comet_chaser_api.wsgi.application'
 DATABASES = {
         'default': {
             'ENGINE': 'djongo',
-            'NAME': 'comet_chaser',
+            'NAME': 'comet_chaser_dev',
             'ENFORCE_SCHEMA': False,
             'CLIENT': {
                 'host': f'mongodb+srv://chungejy:{mongo}@scene.zblsh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',

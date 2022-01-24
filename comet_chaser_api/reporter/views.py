@@ -3,12 +3,10 @@ from django.http.response import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
 import requests
-from database.comet import Comet
 import os
 from dotenv import load_dotenv
 load_dotenv()
 roster_key = os.getenv("ROSTERKEY")
-comet = Comet()
 
 # Create your views here.
 @csrf_exempt
@@ -20,7 +18,6 @@ def reporterView(request):
             version = request.GET.get("version")
             username = request.GET.get("username")
             data_request = request.GET.get("data_request")
-            comet.cloud_connect()
             params = {
                 "version":version,
                 "username":username

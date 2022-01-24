@@ -3,29 +3,27 @@ from django.http.response import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
 import requests
-from database.comet import Comet
 import os
 from dotenv import load_dotenv
 load_dotenv()
 historian_key = os.getenv("HISTORIANKEY")
-comet = Comet()
 
 # Create your views here.
 @csrf_exempt
 def backtestView(request):
     try:
         if request.method == "GET":
-            params = request.GET.get("data_request")
-            comet.cloud_connect()
-            if params == "symbols":
-                final = comet.retrieve_symbols()
-                complete = {"symbols":list(final["crypto"].unique())}
+            headers = {"Content-Type":"application/json"}
+            headers["x-api-key"] = historian_key
+            results = requests.get(f"https://comethistorian.herokuapp.com/api/backtest/",headers=headers)
+            complete = results.json()
         elif request.method == "DELETE":
             complete = {}
         elif request.method == "UPDATE":
             complete = {}
         elif request.method == "POST":
             headers = {"Content-Type":"application/json"}
+            headers["x-api-key"] = historian_key
             info =json.loads(request.body.decode("utf-8"))["params"]
             info["key"] = historian_key
             info["start"] = info["start"].split("T")[0]

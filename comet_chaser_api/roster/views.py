@@ -34,12 +34,15 @@ def rosterView(request):
         elif request.method == "DELETE":
             complete = {}
         elif request.method == "PUT":
-            complete = {}
+            info =json.loads(request.body.decode("utf-8"))["params"]
+            params = json.dumps(info).encode("utf-8")
+            print(info,params)
+            # results = requests.put(f"https://cometroster.herokuapp.com/api/trade_params/",headers=headers,params=params).json()
+            complete = info
         elif request.method == "POST":
             info =json.loads(request.body.decode("utf-8"))["params"]
             params = json.dumps(info).encode("utf-8")
             results = requests.post(f"https://cometroster.herokuapp.com/api/trade_params/",headers=headers,data=params).json()
-            print(results)
             complete = info
         else:
             complete = {}

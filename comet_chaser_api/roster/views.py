@@ -26,13 +26,21 @@ def rosterView(request):
                 results = requests.get(f"https://cometroster.herokuapp.com/api/trade_params/",headers=headers,params=params).json()["trade_params"]
                 results["value"] = str(results["value"])
                 results["conservative"] = str(results["conservative"])
-                complete = {k:results[k] for k in results.keys() if k not in ["pv","days","trades","date","username","version"]}
+                complete = {k:results[k] for k in results.keys() if k not in ["pv","days","trades","date","username","version","sleep_time"]}
+            elif data_request == "bot_status":
+                params["data_request"] = data_request
+                results = requests.get(f"https://cometroster.herokuapp.com/api/roster/",headers=headers,params=params)
+                complete = results.json()
         elif request.method == "DELETE":
             complete = {}
         elif request.method == "PUT":
             complete = {}
         elif request.method == "POST":
-            complete = {}
+            info =json.loads(request.body.decode("utf-8"))["params"]
+            params = json.dumps(info).encode("utf-8")
+            results = requests.post(f"https://cometroster.herokuapp.com/api/trade_params/",headers=headers,data=params).json()
+            print(results)
+            complete = info
         else:
             complete = {}
     except Exception as e:

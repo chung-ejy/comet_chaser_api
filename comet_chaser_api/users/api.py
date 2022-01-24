@@ -2,7 +2,11 @@ from rest_framework import generics, permissions
 from rest_framework.response import Response
 from knox.models import AuthToken
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
-
+import requests
+import os
+from dotenv import load_dotenv
+load_dotenv()
+roster_key = os.getenv("ROSTERKEY")
 class RegisterApi(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
@@ -10,8 +14,13 @@ class RegisterApi(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid(raise_exception=False):
             user = serializer.save()
+            headers = {"Content-type":"application/json",
+                        "x-api-key":roster_key}
+            user_dict = UserSerializer(user,context=self.get_serializer_context()).data
+            params = {"username":user_dict["username"]}
+            requests.post(f"https://cometroster.herokuapp.com/api/roster/",headers=headers,params=params)
             return Response({
-                "user":UserSerializer(user,context=self.get_serializer_context()).data,
+                "user":user_dict,
                 "token": AuthToken.objects.create(user)[1]
             })
         else:

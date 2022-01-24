@@ -36,9 +36,8 @@ def rosterView(request):
         elif request.method == "PUT":
             info =json.loads(request.body.decode("utf-8"))["params"]
             params = json.dumps(info).encode("utf-8")
-            print(info,params)
-            # results = requests.put(f"https://cometroster.herokuapp.com/api/trade_params/",headers=headers,params=params).json()
-            complete = info
+            results = requests.put(f"https://cometroster.herokuapp.com/api/roster/",headers=headers,data=params).json()
+            complete = results
         elif request.method == "POST":
             info =json.loads(request.body.decode("utf-8"))["params"]
             params = json.dumps(info).encode("utf-8")

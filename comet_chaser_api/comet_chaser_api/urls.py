@@ -6,6 +6,7 @@ urlpatterns = [
     path("api/backtest/",include("backtest.urls")),
     path("api/live/",include("live.urls")),
     path("api/test/",include("test_bot.urls")),
-    path("api/users/",include("users.urls"))
+    path("api/users/",include("users.urls")),
+    path("api/roster/",include("roster.urls"))
 ]
 

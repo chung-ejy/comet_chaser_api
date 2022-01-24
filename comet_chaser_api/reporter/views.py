@@ -22,9 +22,8 @@ def reporterView(request):
                 "version":version,
                 "username":username
             }
-            results = requests.get(f"https://cometreporter.herokuapp.com/api/{data_request}/",headers=headers,params=params)
+            results = requests.get(f"https://cometreporter.herokuapp.com/api/{data_request}/",headers=headers,params=params).json()
             if len(results) > 0:
-                results = results.json()
                 complete = {"data":results}
             else:
                 complete = {"data":[]}

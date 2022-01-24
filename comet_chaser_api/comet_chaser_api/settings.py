@@ -39,9 +39,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'rest_framework',
     'backtest',
-    'live',
     'reporter',
-    'test_bot',
     'database',
     'corsheaders',
     'knox',

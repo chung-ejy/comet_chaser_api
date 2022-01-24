@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'knox',
     'users',
+    'roster',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

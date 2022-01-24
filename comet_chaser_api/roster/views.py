@@ -17,17 +17,19 @@ def rosterView(request):
         if request.method == "GET":
             version = request.GET.get("version")
             username = request.GET.get("username")
+            data_request = request.GET.get("data_request")
             params = {
                 "version":version,
                 "username":username
             }
-            results = requests.get(f"https://cometroster.herokuapp.com/api/trade_params/",headers=headers,params=params).json()["trade_params"]
-            results["value"] = str(results["value"])
-            results["conservative"] = str(results["conservative"])
-            complete = {k:results[k] for k in results.keys() if k not in ["pv","days","trades","date","username","version"]}
+            if data_request == "trade_params":
+                results = requests.get(f"https://cometroster.herokuapp.com/api/trade_params/",headers=headers,params=params).json()["trade_params"]
+                results["value"] = str(results["value"])
+                results["conservative"] = str(results["conservative"])
+                complete = {k:results[k] for k in results.keys() if k not in ["pv","days","trades","date","username","version"]}
         elif request.method == "DELETE":
             complete = {}
-        elif request.method == "UPDATE":
+        elif request.method == "PUT":
             complete = {}
         elif request.method == "POST":
             complete = {}

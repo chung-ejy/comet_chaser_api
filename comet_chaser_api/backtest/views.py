@@ -7,7 +7,6 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 historian_key = os.getenv("HISTORIANKEY")
-
 # Create your views here.
 @csrf_exempt
 def backtestView(request):

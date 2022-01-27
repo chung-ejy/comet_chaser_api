@@ -18,7 +18,7 @@ class RegisterApi(generics.GenericAPIView):
                         "x-api-key":roster_key}
             user_dict = UserSerializer(user,context=self.get_serializer_context()).data
             params = {"username":user_dict["username"]}
-            requests.post(f"https://cometroster.herokuapp.com/api/roster/",headers=headers,params=params)
+            requests.post(f"https://cometroster.herokuapp.com/api/roster/",headers=headers,data=params)
             return Response({
                 "user":user_dict,
                 "token": AuthToken.objects.create(user)[1]

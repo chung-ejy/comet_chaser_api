@@ -65,7 +65,7 @@ def rosterView(request):
                 ,"positions":5
                 ,"username":info["username"]
                 ,"version":"live"
-                ,"whitelist_symbols":["BTC","ETH"]
+                ,"whitelist_symbols":["ALL"]
                 ,"date":datetime.now()
             }
             test_trade_params = {

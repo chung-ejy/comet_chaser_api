@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     'knox',
     'users',
     'roster',
+    'trade_params',
+    "analysis",
+    'comet_utils',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -101,7 +104,7 @@ DATABASES = {
             'NAME': 'comet_chaser_dev',
             'ENFORCE_SCHEMA': False,
             'CLIENT': {
-                'host': f'mongodb+srv://chungejy:{mongo}@scene.zblsh.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+                'host': f'mongodb+srv://chungejy:{mongo}@scene.zblsh.mongodb.net/?retryWrites=true&w=majority',
                 "tlsCAFile":ca
             }  
         }

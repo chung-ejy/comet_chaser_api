@@ -2,37 +2,54 @@
 from django.http.response import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
-import requests
+import pandas as pd
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
-historian_key = os.getenv("HISTORIANKEY")
+from database.comet_historian import CometHistorian
+from comet_utils.backtester.backtester import Backtester as bt
+from comet_utils.processor.processor import Processor as p
+load_dotenv()
+header_key = os.getenv("HISTORIANKEY")
 # Create your views here.
+comet_historian = CometHistorian()
 @csrf_exempt
 def backtestView(request):
     try:
+        comet_historian.cloud_connect()
+        key = comet_historian.retrieve("historian_key").iloc[0]["key"]
         if request.method == "GET":
-            headers = {"Content-Type":"application/json"}
-            headers["x-api-key"] = historian_key
-            results = requests.get(f"https://comethistorian.herokuapp.com/api/backtest/",headers=headers)
-            complete = results.json()
+            if key == header_key:
+                symbols = comet_historian.get_symbols("coinbase")
+                complete = symbols
+            else:
+                complete = {"errors":"incorrect_key"}
         elif request.method == "DELETE":
             complete = {}
         elif request.method == "UPDATE":
             complete = {}
         elif request.method == "POST":
-            headers = {"Content-Type":"application/json"}
-            headers["x-api-key"] = historian_key
-            info =json.loads(request.body.decode("utf-8"))["params"]
-            info["key"] = historian_key
-            info["start"] = info["start"].split("T")[0]
-            info["end"] = info["end"].split("T")[0]
-            params = json.dumps(info).encode("utf-8")
-            results = requests.post(f"https://comethistorian.herokuapp.com/api/backtest/",headers=headers,data=params)
-            complete = results.json()
+            info = json.loads(request.body.decode("utf-8"))["params"]
+            if header_key == key:
+                start = datetime.strptime(info["start"],"%Y-%m-%d")
+                end = datetime.strptime(info["end"],"%Y-%m-%d")
+                for key in info.keys():
+                    if key in ["req","signal","retrack_days","positions"]:
+                        info[key] = int(info[key])
+                comet_historian.cloud_connect()
+                comet_historian.store("backtest_request",pd.DataFrame([info]))
+                prices = comet_historian.retrieve("alpha_prices")
+                prices = p.column_date_processing(prices)
+                trades = bt.backtest(start,end,info,prices)
+                complete = {"trades":trades.to_dict("records")
+                ,"analysis":[]
+                }
+            else:
+                complete = {"trades":[],"errors":"incorrect key"}
         else:
             complete = {}
+        comet_historian.disconnect()
     except Exception as e:
-        complete = {}
-        print(str(e))
+        complete = {"trades":[],"errors":str(e)}
     return JsonResponse(complete,safe=False)

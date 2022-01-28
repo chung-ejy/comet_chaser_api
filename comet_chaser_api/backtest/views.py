@@ -32,8 +32,8 @@ def backtestView(request):
         elif request.method == "POST":
             info = json.loads(request.body.decode("utf-8"))["params"]
             if header_key == key:
-                start = datetime.strptime(info["start"],"%Y-%m-%d")
-                end = datetime.strptime(info["end"],"%Y-%m-%d")
+                start = datetime.strptime(info["start"].split("T")[0],"%Y-%m-%d")
+                end = datetime.strptime(info["end"].split("T")[0],"%Y-%m-%d")
                 for key in info.keys():
                     if key in ["req","signal","retrack_days","positions"]:
                         info[key] = int(info[key])

@@ -8,7 +8,7 @@ from database.comet_roster import CometRoster
 import os
 from dotenv import load_dotenv
 load_dotenv()
-header_key = os.getenv("roster_key")
+header_key = os.getenv("HISTORIANKEY")
 comet_roster = CometRoster()
 @csrf_exempt
 def tradeParamsView(request):
@@ -28,7 +28,6 @@ def tradeParamsView(request):
                     results["value"] = str(results["value"])
                     results["conservative"] = str(results["conservative"])
                     complete = {k:results[k] for k in results.keys() if k not in ["pv","days","trades","date","username","version","sleep_time"]}
-                    complete = {f"trade_params":results}
                 else:
                     trade_params = comet_roster.retrieve(f"{version}_trading_params")
                     complete = {"trade_params":trade_params.to_dict("records")}
@@ -39,7 +38,7 @@ def tradeParamsView(request):
         elif request.method == "UPDATE":
             complete = {}
         elif request.method == "POST":
-            info = json.loads(request.body.decode("utf-8"))
+            info = json.loads(request.body.decode("utf-8"))["params"]
             version = info["version"]
             info["date"] = datetime.now()
             comet_roster.store(f"{version}_trading_params",pd.DataFrame([info]))

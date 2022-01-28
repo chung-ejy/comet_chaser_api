@@ -8,27 +8,27 @@ from dotenv import load_dotenv
 from database.comet import Comet
 import pandas as pd
 load_dotenv()
-header_key = os.getenv("ROSTERKEY")
+header_key = os.getenv("HISTORIANKEY")
 # Create your views here.
 
 @csrf_exempt
 def iterationView(request):
     try:
-        header_key = request.headers["x-api-key"]
         if request.method == "GET":
             version = request.GET.get("version")
+            username = request.GET.get("username")
             comet = Comet(version)
             comet.cloud_connect()
             reporter_key = comet.retrieve("reporter_key").iloc[0]["key"]
             if header_key == reporter_key:
-                username = request.GET.get("username")
                 final = comet.retrieve_iterations(username).round(decimals=2)
                 comet.disconnect()
                 if final.index.size > 0:
                     final["date"] = pd.to_datetime(final["date"])
                     final.sort_values("date",inplace=True)
                     final["value"] = [str(x) for x in final["value"]] 
-                    final["conservative"] = [str(x) for x in final["conservative"]]  
+                    final["conservative"] = [str(x) for x in final["conservative"]]
+                    final.fillna(0,inplace=True)
                     complete = final[[x for x in final.columns if x not in ["fee","minimum_rows","live"]]].iloc[::-1].head(10).to_dict("records")
                 else:
                     complete = []
@@ -50,7 +50,6 @@ def iterationView(request):
 @csrf_exempt
 def orderView(request):
     try:
-        header_key = request.headers["x-api-key"]
         if request.method == "GET":
             version = request.GET.get("version")
             username = request.GET.get("username")

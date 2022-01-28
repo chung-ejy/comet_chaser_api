@@ -2,7 +2,7 @@
 from django.http.response import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
-import requests
+from datetime import datetime
 from database.comet_roster import CometRoster
 import pandas as pd
 import os
@@ -14,6 +14,7 @@ header_key = os.getenv("ROSTERKEY")
 @csrf_exempt
 def rosterView(request):
     try:
+        comet_roster.cloud_connect()
         if request.method == "GET":
             version = request.GET.get("version")
             username = request.GET.get("username")
@@ -27,9 +28,9 @@ def rosterView(request):
                 bot_status = comet_roster.get_bot_status(user)
                 complete = {"bot_status":bot_status.to_dict("records")[0]}
             else:
-                complete = comet_roster.retrieve("roster")
+                complete = comet_roster.retrieve("roster").to_dict("records")
         elif request.method == "PUT":
-            info =json.loads(request.body.decode("utf-8"))["params"]
+            info =json.loads(request.body.decode("utf-8"))
             user = info["username"]
             if info["data_request"] == "keys":
                 update = comet_roster.update_roster(user,info)
@@ -40,7 +41,7 @@ def rosterView(request):
                 info["acknowledge"] = update.acknowledged
                 complete = info
         elif request.method == "POST":
-            info =json.loads(request.body.decode("utf-8"))["params"]
+            info =json.loads(request.body.decode("utf-8"))
             result = {}
             result["username"] = info["username"]
             result["live"] = False
@@ -65,6 +66,7 @@ def rosterView(request):
                 ,"username":info["username"]
                 ,"version":"live"
                 ,"whitelist_symbols":["BTC","ETH"]
+                ,"date":datetime.now()
             }
             test_trade_params = {
                 "signal":5
@@ -78,6 +80,7 @@ def rosterView(request):
                 ,"username":info["username"]
                 ,"version":"live"
                 ,"whitelist_symbols":["BTC"]
+                ,"date":datetime.now()
             }
             comet_roster.store("roster",pd.DataFrame([result]))
             comet_roster.store("coinbase_credentials",pd.DataFrame([keys]))
@@ -86,6 +89,7 @@ def rosterView(request):
             complete = result
         else:
             complete = {}
+        comet_roster.disconnect()
     except Exception as e:
         complete = {}
         print(str(e))

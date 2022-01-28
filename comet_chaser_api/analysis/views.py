@@ -13,6 +13,7 @@ from comet_utils.processor.processor import Processor as p
 import os
 from dotenv import load_dotenv
 load_dotenv()
+header_key = os.getenv("HISTORIANKEY")
 comet_historian = CometHistorian()
 
 @csrf_exempt
@@ -28,7 +29,7 @@ def analysisView(request):
             complete = {}
         elif request.method == "POST":
             info = json.loads(request.body.decode("utf-8"))
-            if info["key"] == key:
+            if header_key == key:
                 merged = info["data"]
                 side = info["side"]
                 if side == "exit":

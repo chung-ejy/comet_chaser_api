@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'trade_params',
     "analysis",
     'comet_utils',
+    "treasure",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

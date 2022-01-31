@@ -1,6 +1,7 @@
 from database.adatabase import ADatabase
 import pandas as pd
 from cryptography.fernet import Fernet
+import os
 header_key = os.getenv("ROSTERKEY")
 
 class CometRoster(ADatabase):

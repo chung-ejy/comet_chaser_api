@@ -42,10 +42,28 @@ class CometRoster(ADatabase):
         except Exception as e:
             print(self.name,"roster",str(e))
     
+    def update_subscription(self,user,params):
+        try:
+            db = self.client[self.name]
+            table = db["paypal_subscriptions"]
+            data = table.update_one({"username":user},{"$set":params})
+            return data
+        except Exception as e:
+            print(self.name,"roster",str(e))
+    
     def get_bot_status(self,user):
         try:
             db = self.client[self.name]
             table = db["roster"]
+            data = table.find({"username":user},{"_id":0},show_record_id=False)
+            return pd.DataFrame(list(data))
+        except Exception as e:
+            print(self.name,"roster",str(e))
+    
+    def get_subscription(self,user):
+        try:
+            db = self.client[self.name]
+            table = db["paypal_subscriptions"]
             data = table.find({"username":user},{"_id":0},show_record_id=False)
             return pd.DataFrame(list(data))
         except Exception as e:

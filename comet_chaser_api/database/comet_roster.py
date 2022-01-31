@@ -3,6 +3,7 @@ import pandas as pd
 from cryptography.fernet import Fernet
 import os
 header_key = os.getenv("ROSTERKEY")
+encryption_key = os.getenv("ENCRYPTIONKEY")
 
 class CometRoster(ADatabase):
     
@@ -40,7 +41,7 @@ class CometRoster(ADatabase):
         try:
             db = self.client[self.name]
             table = db["coinbase_credentials"]
-            fernet = Fernet(header_key.encode())
+            fernet = Fernet(encryption_key.encode())
             encoded_keys = {}
             for key in params.keys():
                 if "key" in key:

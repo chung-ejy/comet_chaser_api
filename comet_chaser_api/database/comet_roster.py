@@ -44,7 +44,7 @@ class CometRoster(ADatabase):
             fernet = Fernet(encryption_key.encode())
             encoded_keys = {}
             for key in params.keys():
-                if "key" in key:
+                if "key" in key or "secret" in key or "pass" in key:
                     encoded_keys[key] =  fernet.encrypt(params[key].encode())
             data = table.update_one({"username":user},{"$set":encoded_keys})
             return data

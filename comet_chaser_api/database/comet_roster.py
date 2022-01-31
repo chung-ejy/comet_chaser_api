@@ -1,5 +1,7 @@
 from database.adatabase import ADatabase
 import pandas as pd
+from cryptography.fernet import Fernet
+header_key = os.getenv("ROSTERKEY")
 
 class CometRoster(ADatabase):
     
@@ -37,6 +39,11 @@ class CometRoster(ADatabase):
         try:
             db = self.client[self.name]
             table = db["coinbase_credentials"]
+            fernet = Fernet(header_key)
+            encoded_keys = {}
+            for key in params.keys():
+                if "key" in key:
+                    encoded_keys[key] =  fernet.encrypt(params[key].encode())
             data = table.update_one({"username":user},{"$set":params})
             return data
         except Exception as e:

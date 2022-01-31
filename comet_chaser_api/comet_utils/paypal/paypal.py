@@ -7,7 +7,7 @@ from base64 import b64encode
 class Paypal(object):
     def __init__(self,live):
         self.live = live
-        self.base_url = "https://api-m.sandbox.paypal.com/v1/"
+        self.base_url = "https://api-m.paypal.com/v1/"
 
     def get_token(self,client_id,secret):
         auth=HTTPBasicAuth(client_id, secret)

@@ -90,7 +90,7 @@ def orderView(request):
         else:
             complete = {}
     except Exception as e:
-        complete = {}
+        complete = []
         print(str(e))
     return JsonResponse(complete,safe=False)
 
@@ -127,6 +127,6 @@ def tradeView(request):
         else:
             complete = {}
     except Exception as e:
-        complete = {}
+        complete = []
         print(str(e))
     return JsonResponse(complete,safe=False)

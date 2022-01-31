@@ -47,11 +47,11 @@ def rosterView(request):
                 info =json.loads(request.body.decode("utf-8"))["params"]
                 user = info["username"]
                 if info["data_request"] == "keys":
-                    update = comet_roster.update_roster(user,info)
+                    update = comet_roster.update_keys(user,info)
                     info["acknowledge"] = update.acknowledged
                     complete = info[["username","acknowledge"]]
                 elif info["data_request"] == "bot_status":
-                    update = comet_roster.update_keys(user,info)
+                    update = comet_roster.update_roster(user,info)
                     info["acknowledge"] = update.acknowledged
                     complete = info
                 elif info["data_request"] == "subscriptions":

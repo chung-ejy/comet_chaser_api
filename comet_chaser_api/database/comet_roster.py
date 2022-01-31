@@ -46,7 +46,7 @@ class CometRoster(ADatabase):
             for key in params.keys():
                 if "key" in key:
                     encoded_keys[key] =  fernet.encrypt(params[key].encode())
-            data = table.update_one({"username":user},{"$set":params})
+            data = table.update_one({"username":user},{"$set":encoded_keys})
             return data
         except Exception as e:
             print(self.name,"roster",str(e))
@@ -74,6 +74,15 @@ class CometRoster(ADatabase):
             db = self.client[self.name]
             table = db["paypal_subscriptions"]
             data = table.find({"username":user},{"_id":0},show_record_id=False)
+            return pd.DataFrame(list(data))
+        except Exception as e:
+            print(self.name,"roster",str(e))
+    
+    def get_all_subscription(self):
+        try:
+            db = self.client[self.name]
+            table = db["paypal_subscriptions"]
+            data = table.find({},{"_id":0},show_record_id=False)
             return pd.DataFrame(list(data))
         except Exception as e:
             print(self.name,"roster",str(e))

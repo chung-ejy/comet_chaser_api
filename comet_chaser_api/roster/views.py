@@ -41,6 +41,9 @@ def rosterView(request):
                     user = request.GET.get("username")
                     bot_status = comet_roster.get_subscription(user)
                     complete = bot_status.to_dict("records")[0]
+                elif data_request == "all_subscriptions":
+                    bot_status = comet_roster.get_all_subscription()
+                    complete = bot_status.to_dict("records")
                 else:
                     complete = comet_roster.retrieve("roster").to_dict("records")
             elif request.method == "PUT":

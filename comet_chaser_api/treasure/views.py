@@ -25,7 +25,7 @@ def treasureView(request):
                 complete = roster.to_dict("records")[0]
                 decoded = {}
                 for key in complete.keys():
-                    if "apikey" in key or "phrase" in key or "secret" in key:
+                    if key in ["apikey","sandboxapikey", "passphrase","sandboxpassphrase","secret","sandboxsecret"]:
                         decoded[key] = complete[key].decode()
                 decoded["username"] = complete["username"]
                 complete = decoded

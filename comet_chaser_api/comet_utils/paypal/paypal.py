@@ -36,7 +36,6 @@ class Paypal(object):
 
     def cancel_subscription(self,client_id,secret,sub_id):
         token = self.get_token(client_id,secret)
-        print(token)
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {token}"
@@ -45,7 +44,5 @@ class Paypal(object):
             "reason": "Dissatisfied with service"
             }
         url =  f"{self.base_url}billing/subscriptions/{sub_id}/cancel"
-        print(url)
-        print(headers)
         r = requests.post(url, headers=headers,params=data)
         return r

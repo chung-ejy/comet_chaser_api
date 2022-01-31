@@ -29,6 +29,7 @@ def analysisView(request):
             complete = {}
         elif request.method == "POST":
             info = json.loads(request.body.decode("utf-8"))
+            print(info)
             if "X-Api-Key" in request.headers.keys():
                 header_key = request.headers["X-Api-Key"]
             if header_key == key:

@@ -23,7 +23,6 @@ def treasureView(request):
             if header_key == key:
                 roster = comet_roster.get_secrets(user)
                 complete = roster.to_dict("records")[0]
-                print(complete)
                 decoded = {}
                 for key in complete.keys():
                     if "apikey" in key or "phrase" in key or "secret" in key:

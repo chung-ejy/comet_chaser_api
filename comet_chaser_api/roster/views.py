@@ -81,7 +81,7 @@ def rosterView(request):
                 keys["apikey"] = ""
                 keys["passphrase"] = ""
                 keys["secret"] = ""
-                keys["adnboxapikey"] = ""
+                keys["sandboxapikey"] = ""
                 keys["sandboxpassphrase"] = ""
                 keys["sandboxsecret"] = ""
                 trade_params = {

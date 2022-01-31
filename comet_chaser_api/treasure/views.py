@@ -26,7 +26,12 @@ def treasureView(request):
                 decoded = {}
                 for key in complete.keys():
                     if key in ["apikey","sandboxapikey", "passphrase","sandboxpassphrase","secret","sandboxsecret"]:
-                        decoded[key] = complete[key].decode()
+                        try:
+                            decoded[key] = complete[key].decode()
+                        except:
+                            continue
+                    else:
+                        continue
                 decoded["username"] = complete["username"]
                 complete = decoded
             else:

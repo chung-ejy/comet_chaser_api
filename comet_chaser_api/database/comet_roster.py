@@ -40,7 +40,7 @@ class CometRoster(ADatabase):
         try:
             db = self.client[self.name]
             table = db["coinbase_credentials"]
-            fernet = Fernet(header_key)
+            fernet = Fernet(header_key.encode())
             encoded_keys = {}
             for key in params.keys():
                 if "key" in key:

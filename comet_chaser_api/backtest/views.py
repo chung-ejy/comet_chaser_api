@@ -47,9 +47,9 @@ def backtestView(request):
                     ,"analysis":[]
                     }
                 except Exception as e:
-                    complete = {"trades":[],"errors":"no trades"}
+                    complete = {"trades":[],"errors":"no trades","analysis":[]}
             else:
-                complete = {"trades":[],"errors":"incorrect key"}
+                complete = {"trades":[],"errors":"incorrect key","analysis":[]}
         else:
             complete = {}
         comet_historian.disconnect()

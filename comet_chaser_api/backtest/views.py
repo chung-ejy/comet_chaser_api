@@ -41,10 +41,13 @@ def backtestView(request):
                 comet_historian.store("backtest_request",pd.DataFrame([info]))
                 prices = comet_historian.retrieve("alpha_prices")
                 prices = p.column_date_processing(prices)
-                trades = bt.backtest(start,end,info,prices)
-                complete = {"trades":trades.to_dict("records")
-                ,"analysis":[]
-                }
+                try:
+                    trades = bt.backtest(start,end,info,prices)
+                    complete = {"trades":trades.to_dict("records")
+                    ,"analysis":[]
+                    }
+                except Exception as e:
+                    complete = {"trades":[],"errors":"no trades"}
             else:
                 complete = {"trades":[],"errors":"incorrect key"}
         else:

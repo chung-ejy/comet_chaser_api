@@ -32,7 +32,6 @@ def backtestView(request):
         elif request.method == "POST":
             info = json.loads(request.body.decode("utf-8"))["params"]
             if header_key == key:
-                print("backtest pinged")
                 start = datetime.strptime(info["start"].split("T")[0],"%Y-%m-%d")
                 end = datetime.strptime(info["end"].split("T")[0],"%Y-%m-%d")
                 for key in info.keys():

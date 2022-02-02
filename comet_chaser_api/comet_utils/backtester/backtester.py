@@ -80,7 +80,7 @@ class Backtester(object):
                             status = "date adding"
                             date = trade["sell_date"] + timedelta(days=1)
                 except Exception as e:
-                    print(date,status,trade,str(e))
+                    # print(date,status,trade,str(e))
                     date = date + timedelta(days=1)
         return pd.DataFrame(trades)
     

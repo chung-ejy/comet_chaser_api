@@ -22,6 +22,8 @@ class Backtester(object):
         conservative = params["conservative"]
         entry_strat = params["entry_strategy"]
         exit_strat = params["exit_strategy"]
+        if exit_strat == "ai" or entry_strat == "ai":
+            rt = 7
         market = prices.pivot_table(index="date",columns="crypto",values="close").reset_index()
         market = p.column_date_processing(market)
         market = market.fillna(method="ffill")

@@ -14,7 +14,7 @@ class CometRoster(ADatabase):
         try:
             db = self.client[self.name]
             table = db[f"{version}_trading_params"]
-            data = table.find({"username":user},{"_id":0},show_record_id=False).limit(10)
+            data = table.find({"username":user},{"_id":0},show_record_id=False).sort("_id", -1).limit(10)
             return pd.DataFrame(list(data))
         except Exception as e:
             print(self.name,"roster",str(e))

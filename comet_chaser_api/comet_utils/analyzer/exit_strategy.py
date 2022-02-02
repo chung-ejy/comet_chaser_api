@@ -56,7 +56,10 @@ class ExitStrategy(object):
                     if exit_strat =="adaptive_hold":
                         analysis = self.backtest_adaptive_hold(final,trade,rt,req)
                     else:
-                        analysis = pd.DataFrame([{}])
+                        if exit_strat =="ai":
+                            analysis = self.backtest_ai(final,trade,rt,req)
+                        else:
+                            analysis = pd.DataFrame([{}])
         return analysis
 
     @classmethod
@@ -110,6 +113,26 @@ class ExitStrategy(object):
                         & (final["inflection"] <= 1)
                         & (final["inflection"] >= -1)]
         return profits
+
+    @classmethod
+    def backtest_ai(self,final,trade,rt,req):
+        symbol = trade["crypto"]
+        exits = final[(final["date"]>trade["date"]) & (final["crypto"]==symbol)]
+        bp = float(trade["close"])
+        exits["delta"] = (exits["close"] - bp) / bp
+        profits = exits[exits["prediction"]==False]
+        if profits.index.size < 1:
+            the_exit = exits.iloc[-1]
+            trade["type"] = "held"
+            trade["sell_price"] = the_exit["close"]
+        else:
+            the_exit = profits.iloc[0]
+            trade["type"] = "profit"
+            trade["sell_price"] = the_exit["close"]
+        trade["sell_date"] = the_exit["date"]
+        trade["buy_price"] = bp
+        trade["delta"] = (trade["sell_price"] - trade["buy_price"])/ trade["buy_price"]
+        return trade
 
     @classmethod
     def backtest_due_date(self,final,trade,rt,req):

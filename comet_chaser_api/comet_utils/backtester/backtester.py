@@ -4,12 +4,12 @@ from comet_utils.processor.processor import Processor as p
 from time import sleep
 from comet_utils.analyzer.entry_strategy import EntryStrategy
 from comet_utils.analyzer.exit_strategy import ExitStrategy
-
+import pickle
 
 class Backtester(object):
 
     @classmethod
-    def backtest(self,start,end,params,prices):
+    def backtest(self,start,end,params,prices,models):
         status = "loads"
         symbols = params["symbols"]
         if "ALL" in symbols:
@@ -29,13 +29,20 @@ class Backtester(object):
         ns = []
         sim = sim[sim["value"] > 0]
         for crypto in [x.lower() for x in symbols]:
-            crypto_sim = sim[sim["crypto"]==crypto].copy()
-            crypto_sim.sort_values("date",inplace=True)
-            crypto_sim["signal"] = crypto_sim["value"].pct_change(rt)
-            crypto_sim["velocity"] = crypto_sim["signal"].pct_change(rt)
-            crypto_sim["inflection"] = crypto_sim["velocity"].pct_change(rt)
-            crypto_sim["p_sign_change"] = [row[1]["velocity"] * row[1]["inflection"] < 0 for row in crypto_sim.iterrows()]
-            ns.append(crypto_sim)
+            try:
+                crypto_sim = sim[sim["crypto"]==crypto].copy()
+                crypto_sim.sort_values("date",inplace=True)
+                crypto_sim["signal"] = crypto_sim["value"].pct_change(rt)
+                crypto_sim["velocity"] = crypto_sim["signal"].pct_change(rt)
+                crypto_sim["inflection"] = crypto_sim["velocity"].pct_change(rt)
+                crypto_sim["p_sign_change"] = [row[1]["velocity"] * row[1]["inflection"] < 0 for row in crypto_sim.iterrows()]
+                crypto_sim.rename(columns={"inflection":"concavity"},inplace=True)
+                model = models[models["symbol"]==crypto.upper()]["model"].item()
+                crypto_sim["prediction"] = pickle.loads(model).predict(crypto_sim[["signal","velocity","concavity"]])
+                crypto_sim.rename(columns={"concavity":"inflection"},inplace=True)
+                ns.append(crypto_sim)
+            except:
+                continue
         final = pd.concat(ns)
         final = final[(final["date"] < end) & (final["value"] > 0)].dropna()
         final.rename(columns={"value":"close"},inplace=True)
@@ -43,6 +50,7 @@ class Backtester(object):
         req = float(r/100)
         date = start
         trades = []
+        print("backtest_started")
         for position in range(positions):
             date = start
             while date < end:
@@ -72,7 +80,7 @@ class Backtester(object):
                             status = "date adding"
                             date = trade["sell_date"] + timedelta(days=1)
                 except Exception as e:
-                    # print(date,status,trade,str(e))
+                    print(date,status,trade,str(e))
                     date = date + timedelta(days=1)
         return pd.DataFrame(trades)
     
@@ -155,7 +163,7 @@ class Backtester(object):
                     status = "date adding"
                     date = trade_i["sell_date"] + timedelta(days=1)
             except Exception as e:
-                # print(date,status,trade_i,str(e))
+                print(date,status,trade_i,str(e))
                 date = date + timedelta(days=1)
         return pd.DataFrame(trades)
 

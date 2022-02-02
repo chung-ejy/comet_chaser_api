@@ -14,3 +14,12 @@ class CometHistorian(ADatabase):
             return list(data)
         except Exception as e:
             print(self.name,"fills",str(e))
+    
+    def retrieve_model(self,symbol):
+        try:
+            db = self.client[self.name]
+            table = db[f"coinbase_models"]
+            data = table.find({"symbol":symbol},{})
+            return list(data)
+        except Exception as e:
+            print(self.name,"fills",str(e))

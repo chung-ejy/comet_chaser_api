@@ -54,7 +54,10 @@ class EntryStrategy(object):
                         if entry_strat == "all":
                             offerings = self.backtest_all(final,date,signal,value,conservative)
                         else:
-                            offerings = pd.DataFrame([{}])
+                            if entry_strat == "ai":
+                                offerings = self.backtest_ai(final,date,signal,value,conservative)
+                            else:
+                                offerings = pd.DataFrame([{}])
         offerings["entry_strat"] = entry_strat
         offerings["value"] = value
         offerings["signal"] = signal
@@ -80,7 +83,6 @@ class EntryStrategy(object):
             except:
                 predictions.append(nan)
         final["prediction"] = predictions
-        print(final.head())
         if value:
             offerings = final[final["prediction"]==value].sort_values("signal",ascending=conservative)
         else:
@@ -164,6 +166,14 @@ class EntryStrategy(object):
                                 & ((final["inflection"] <= 0)
                                 | (final["inflection"] >= -1))
                                 ].sort_values("signal",ascending=sorting)
+        return offerings
+    @classmethod
+    def backtest_ai(self,final,date,signal,value,conservative):
+        if value:
+            offerings = final[(final["date"]==date) & (final["prediction"] == value)].sort_values("signal",ascending=conservative)
+        else:
+            sorting = not conservative
+            offerings = final[(final["date"]==date) & (final["prediction"] == value)].sort_values("signal",ascending=sorting)
         return offerings
 
     @classmethod

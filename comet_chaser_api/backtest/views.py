@@ -32,17 +32,18 @@ def backtestView(request):
         elif request.method == "POST":
             info = json.loads(request.body.decode("utf-8"))["params"]
             if header_key == key:
+                print("backtest pinged")
                 start = datetime.strptime(info["start"].split("T")[0],"%Y-%m-%d")
                 end = datetime.strptime(info["end"].split("T")[0],"%Y-%m-%d")
                 for key in info.keys():
                     if key in ["req","signal","retrack_days","positions"]:
                         info[key] = int(info[key])
-                comet_historian.cloud_connect()
                 comet_historian.store("backtest_request",pd.DataFrame([info]))
                 prices = comet_historian.retrieve("alpha_prices")
+                models = comet_historian.retrieve("alpha_models")
                 prices = p.column_date_processing(prices)
                 try:
-                    trades = bt.backtest(start,end,info,prices)
+                    trades = bt.backtest(start,end,info,prices,models)
                     complete = {"trades":trades.to_dict("records")
                     ,"analysis":[]
                     }

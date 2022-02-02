@@ -43,8 +43,52 @@ def backtestView(request):
                 prices = p.column_date_processing(prices)
                 try:
                     trades = bt.backtest(start,end,info,prices,models)
+                    analysis = []
+                    for position in range(int(info["positions"])):
+                        spot_trades = trades[trades["position"]==position]
+                        if spot_trades.index.size > 0:
+                            initial = 100 / int(info["positions"])
+                            for delta in spot_trades["delta"]:
+                                initial = initial * (1+delta)
+                            spot_trades["hpr"] = spot_trades["sell_date"] - spot_trades["date"]
+                            spot_trades["days"] = [x.days for x in spot_trades["hpr"]]
+                            days = spot_trades["days"].mean()
+                            analysis.append({"signal":info["signal"]
+                                            ,"req":info["req"]
+                                            ,"trades":spot_trades.index.size
+                                            ,"pv":initial,"days":days
+                                            ,"retrack_days":info["retrack_days"]
+                                            ,"value":info["value"]
+                                            ,"conservative":info["conservative"]
+                                            ,"entry_strategy":info["entry_strategy"]
+                                            ,"exit_strategy":info["exit_strategy"]
+                                            ,"positions":info["positions"]
+                                            ,"position":position
+                                            ,"api":"alpha"
+                                            })
+                        else:
+                            initial = 100 / int(info["positions"])
+                            spot_trades["hpr"] = 0
+                            days = 0
+                            analysis.append({"signal":info["signal"]
+                                            ,"req":info["req"]
+                                            ,"trades":spot_trades.index.size
+                                            ,"pv":initial,"days":days
+                                            ,"retrack_days":info["retrack_days"]
+                                            ,"value":info["value"]
+                                            ,"conservative":info["conservative"]
+                                            ,"entry_strategy":info["entry_strategy"]
+                                            ,"exit_strategy":info["exit_strategy"]
+                                            ,"positions":info["positions"]
+                                            ,"position":position
+                                            ,"api":"alpha"
+                                            })
+                    a = pd.DataFrame(analysis)
+                    final_analysis = a.pivot_table(index=["api","conservative","value","entry_strategy","exit_strategy","signal","retrack_days","req","positions"],columns="position",values="pv").reset_index()
+                    final_analysis.fillna(100 / int(info["positions"]),inplace=True)
+                    final_analysis["pv"] = [sum([row[1][i] if i in row[1].keys() else 0 for i in range(info["positions"])]) for row in final_analysis.iterrows()]
                     complete = {"trades":trades.to_dict("records")
-                    ,"analysis":[]
+                    ,"analysis":final_analysis.to_dict("records")
                     }
                 except Exception as e:
                     complete = {"trades":[],"errors":"no trades","analysis":[]}

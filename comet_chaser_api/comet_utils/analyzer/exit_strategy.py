@@ -1,6 +1,15 @@
+from cmath import nan
 from datetime import timedelta, datetime
+from re import M
 import pandas as pd
 from comet_utils.processor.processor import Processor as p
+import pickle
+from database.comet_historian import CometHistorian
+import os
+from dotenv import load_dotenv
+load_dotenv()
+mongouser = os.getenv("MONGOUSER")
+mongokey = os.getenv("MONGOKEY")
 class ExitStrategy(object):
 
     @classmethod
@@ -25,7 +34,10 @@ class ExitStrategy(object):
                     if exit_strat =="adaptive_hold":
                         analysis = self.adaptive_hold(product_data,req)
                     else:
-                        analysis = pd.DataFrame([{}])
+                        if exit_strat == "ai":
+                            analysis = self.ai_driven(product_data)
+                        else:
+                            analysis = pd.DataFrame([{}])
         if analysis.index.size > 0:
             incomplete_trade["sell_price"] = product_data["ask"].item()
         return incomplete_trade
@@ -46,6 +58,28 @@ class ExitStrategy(object):
                     else:
                         analysis = pd.DataFrame([{}])
         return analysis
+
+    @classmethod
+    def ai_driven(self,final):
+        comet_historian = CometHistorian()
+        comet_historian.cloud_connect()
+        models = comet_historian.retrieve("coinbase_models")
+        comet_historian.disconnect()
+        factors = ["signal","velocity","concavity"]
+        models["model"] = [pickle.loads(x) for x in models["model"]]
+        final.rename(columns={"inflection":"concavity"},inplace=True)
+        predictions = []
+        for row in final.iterrows():
+            try:
+                symbol = row[1]["crypto"]
+                model = models[models["symbol"]==symbol]["model"].item()
+                prediction = model.predict(final[final["crypto"]==symbol][factors])[0]
+                predictions.append(prediction)
+            except:
+                predictions.append(nan)
+        final["prediction"] = predictions
+        offerings = final[final["prediction"]==False]
+        return offerings
 
     @classmethod
     def due_date(self,final,trade,rt,req):

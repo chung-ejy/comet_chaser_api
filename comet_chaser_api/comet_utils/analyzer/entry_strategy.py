@@ -1,4 +1,12 @@
+from cmath import nan
 import pandas as pd
+import pickle
+from database.comet_historian import CometHistorian
+import os
+from dotenv import load_dotenv
+load_dotenv()
+mongouser = os.getenv("MONGOUSER")
+mongokey = os.getenv("MONGOKEY")
 class EntryStrategy(object):
 
     @classmethod
@@ -18,7 +26,10 @@ class EntryStrategy(object):
                         if entry_strat == "all":
                             offerings = self.all(final,signal,value,conservative)
                         else:
-                            offerings = pd.DataFrame([{}])
+                            if entry_strat == "ai":
+                                offerings = self.ai_driven(final,value,conservative)
+                            else:
+                                offerings = pd.DataFrame([{}])
         offerings["entry_strat"] = entry_strat
         offerings["value"] = value
         offerings["signal"] = signal
@@ -48,6 +59,33 @@ class EntryStrategy(object):
         offerings["value"] = value
         offerings["signal"] = signal
         offerings["conservative"] = conservative
+        return offerings
+
+    @classmethod
+    def ai_driven(self,final,value,conservative):
+        comet_historian = CometHistorian()
+        comet_historian.cloud_connect()
+        models = comet_historian.retrieve("coinbase_models")
+        comet_historian.disconnect()
+        factors = ["signal","velocity","concavity"]
+        models["model"] = [pickle.loads(x) for x in models["model"]]
+        final.rename(columns={"inflection":"concavity"},inplace=True)
+        predictions = []
+        for row in final.iterrows():
+            try:
+                symbol = row[1]["crypto"]
+                model = models[models["symbol"]==symbol]["model"].item()
+                prediction = model.predict(final[final["crypto"]==symbol][factors])[0]
+                predictions.append(prediction)
+            except:
+                predictions.append(nan)
+        final["prediction"] = predictions
+        print(final.head())
+        if value:
+            offerings = final[final["prediction"]==value].sort_values("signal",ascending=conservative)
+        else:
+            sorting = not conservative
+            offerings = final[final["prediction"]==value].sort_values("signal",ascending=sorting)
         return offerings
 
     @classmethod

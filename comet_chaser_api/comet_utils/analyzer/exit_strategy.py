@@ -81,6 +81,7 @@ class ExitStrategy(object):
             except:
                 predictions.append(nan)
         final["prediction"] = predictions
+        print(final)
         offerings = final[final["prediction"]==False]
         return offerings
 

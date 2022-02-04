@@ -38,8 +38,8 @@ def backtestView(request):
                     if key in ["req","signal","retrack_days","positions"]:
                         info[key] = int(info[key])
                 comet_historian.store("backtest_request",pd.DataFrame([info]))
-                prices = comet_historian.retrieve("alpha_prices")
-                models = comet_historian.retrieve("alpha_models")
+                prices = comet_historian.retrieve("coinbase_prices")
+                models = comet_historian.retrieve("coinbase_models")
                 prices = p.column_date_processing(prices)
                 try:
                     trades = bt.backtest(start,end,info,prices,models)

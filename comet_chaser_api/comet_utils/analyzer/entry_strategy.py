@@ -83,6 +83,7 @@ class EntryStrategy(object):
             except:
                 predictions.append(nan)
         final["prediction"] = predictions
+        print(final)
         if value:
             offerings = final[final["prediction"]==value].sort_values("signal",ascending=conservative)
         else:
